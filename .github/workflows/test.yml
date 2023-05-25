@@ -1,0 +1,22 @@
+on:
+  - push
+  - workflow_dispatch
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: generate incrementing counter
+        id: counter
+        run: echo "value=$(date +%H%M%S)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        with:
+          key: test-${{ steps.counter.outputs.value }}
+          path: file
+          restore-keys: test-
+
+      - name: read file loaded from cache
+        run: cat file || true
+  
+      - name: append to file to be cached
+        run: echo $(date) >> file
